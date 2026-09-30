@@ -51,3 +51,52 @@ rebirthButton.addEventListener("click", () => {
 });
 
 updatePage();
+
+
+/*
+function downloadSave() {
+  const saveData = `${count}\n${rebirths}`;
+
+  const blob = new Blob([saveData], {
+    type: "text/plain"
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "sandwich-save.txt";
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+
+
+function loadSave(file) {
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(event) {
+    const lines = event.target.result.trim().split(/\r?\n/);
+
+    count = Number(lines[0]);
+    rebirths = Number(lines[1]);
+
+    saveProgress();
+    updatePage();
+  };
+
+  reader.readAsText(file);
+}
+
+
+
+
+in HTML
+<button onclick="downloadSave()">Download Save</button>
+
+<input type="file" accept=".txt" onchange="loadSave(this.files[0])">
+*/
+
+
