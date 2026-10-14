@@ -1,128 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sandwich Clicker</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-icon">🥪</span> Sandwich Clicker</div>
+    <div class="stats">
+      <div class="counter-card" aria-live="polite">
+        <span class="sandwich-small">🥪</span>
+        <div><div class="counter-label">Sandwiches</div><div id="counter">0</div></div>
+      </div>
+      <div class="counter-card" aria-live="polite">
+        <div><div class="counter-label">Rebirths</div><div id="rebirthCount">0</div></div>
+      </div>
+    </div>
+  </header>
 
-  <h1>Sandwich Clicker</h1>
-  <div>
-    <p>Clicks: <span id="clickCount">0</span></p>
-    <p>Rebirths: <span id="rebirthCount">0</span></p>
-  </div>
+  <main>
+    <section class="game-panel" aria-label="Sandwich clicking area">
+      <button id="sandwichButton" aria-label="Click the sandwich to earn sandwiches">🥪</button>
+      <p class="click-hint">Click the sandwich!</p>
+      <p class="instructions">Each rebirth increases the sandwiches earned per click. Your progress saves automatically.</p>
+    </section>
 
-  <button id="clickBtn">Click Sandwich!</button>
-  <button id="rebirthBtn">Rebirth (Costs 100 Clicks)</button>
+    <aside class="side-panel">
+      <h2>🔄 Rebirth</h2>
+      <p>Reach <strong>100 sandwiches</strong> to unlock Rebirth. Rebirthing resets your sandwich count and increases your click bonus.</p>
+      <div class="progress-track" aria-label="Progress toward rebirth"><div id="progressBar"></div></div>
+      <div id="progressText">0 / 100 sandwiches</div>
+      <button id="rebirthButton">🔄 Rebirth — Reset Count</button>
+      <p class="rebirth-note" id="statusMessage" aria-live="polite">You need 100 sandwiches to unlock rebirth.</p>
+    </aside>
+  </main>
 
-  <!-- Firebase Modular SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 1. Replace with your actual Firebase config from the Firebase Console
     const firebaseConfig = {
-  apiKey: "AIzaSyCsdsIdq3mCkvGcNaikUmyHnAD7nGjQdUE",
-  authDomain: "sandwichclicker.firebaseapp.com",
-  projectId: "sandwichclicker",
-  storageBucket: "sandwichclicker.firebasestorage.app",
-  messagingSenderId: "227365631893",
-  appId: "1:227365631893:web:9920e730b45a3d95bb689c",
-  measurementId: "G-MLMRT4S5WQ"
-};
+      apiKey: "AIzaSyCsdsIdq3mCkvGcNaikUmyHnAD7nGjQdUE",
+      authDomain: "sandwichclicker.firebaseapp.com",
+      projectId: "sandwichclicker",
+      storageBucket: "sandwichclicker.firebasestorage.app",
+      messagingSenderId: "227365631893",
+      appId: "1:227365631893:web:9920e730b45a3d95bb689c",
+      measurementId: "G-MLMRT4S5WQ"
+    };
 
-    // Initialize Firebase & Firestore
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const rebirthCost = 100;
 
-    // Game state variables
     let clicks = 0;
     let rebirths = 0;
     let currentUser = null;
 
-    // DOM Elements
-    const clickCountEl = document.getElementById("clickCount");
+    const counterEl = document.getElementById("counter");
     const rebirthCountEl = document.getElementById("rebirthCount");
-    const clickBtn = document.getElementById("clickBtn");
-    const rebirthBtn = document.getElementById("rebirthBtn");
+    const sandwichButton = document.getElementById("sandwichButton");
+    const rebirthButton = document.getElementById("rebirthButton");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const statusMessage = document.getElementById("statusMessage");
 
-    // Update UI elements
     function updateUI() {
-      clickCountEl.textContent = clicks;
+      counterEl.textContent = clicks;
       rebirthCountEl.textContent = rebirths;
+      const progress = Math.min((clicks / rebirthCost) * 100, 100);
+      progressBar.style.width = `${progress}%`;
+      progressText.textContent = `${clicks} / ${rebirthCost} sandwiches`;
+      rebirthButton.style.display = clicks >= rebirthCost ? "block" : "none";
+      statusMessage.textContent = clicks >= rebirthCost
+        ? "You are ready to rebirth!"
+        : `You need ${rebirthCost - clicks} more sandwiches to unlock rebirth.`;
     }
 
-    // 2. Load User Data from Firestore NoSQL Database
     async function loadUserData(uid) {
       const userDocRef = doc(db, "users", uid);
       const userDoc = await getDoc(userDocRef);
-
       if (userDoc.exists()) {
         const data = userDoc.data();
         clicks = data.clicks || 0;
         rebirths = data.rebirths || 0;
       } else {
-        // Create new user record in Firestore
-        await setDoc(userDocRef, {
-          clicks: 0,
-          rebirths: 0,
-          createdAt: new Date()
-        });
+        await setDoc(userDocRef, { clicks: 0, rebirths: 0, createdAt: new Date() });
       }
       updateUI();
     }
 
-    // 3. Save User Data to Firestore
     async function saveGameData() {
       if (!currentUser) return;
-      const userDocRef = doc(db, "users", currentUser.uid);
-      await updateDoc(userDocRef, {
-        clicks: clicks,
-        rebirths: rebirths
-      });
+      await updateDoc(doc(db, "users", currentUser.uid), { clicks, rebirths });
     }
 
-    // Auto-save periodically (every 600 seconds) to prevent spamming database calls on every click
-    setInterval(saveGameData, 600000);
-
-    // 4. Game Action Handlers
-    clickBtn.addEventListener("click", () => {
-      clicks += (rebirths + 1); // Extra clicks per rebirth
+    sandwichButton.addEventListener("click", () => {
+      clicks += rebirths + 1;
       updateUI();
     });
 
-    rebirthBtn.addEventListener("click", () => {
-      const rebirthCost = 100;
-      if (clicks >= rebirthCost) {
-        clicks -= rebirthCost;
-        rebirths += 1;
-        updateUI();
-        saveGameData(); // Save immediately on rebirth
-      } else {
-        alert("Not enough clicks to rebirth!");
-      }
+    rebirthButton.addEventListener("click", async () => {
+      if (clicks < rebirthCost) return;
+      clicks -= rebirthCost;
+      rebirths += 1;
+      updateUI();
+      await saveGameData();
     });
 
-    // 5. Authenticate User Anonymously on Load
-    signInAnonymously(auth).catch((error) => {
-      console.error("Authentication Error:", error);
-    });
+    setInterval(saveGameData, 600000);
+    window.addEventListener("beforeunload", saveGameData);
 
+    signInAnonymously(auth).catch((error) => console.error("Authentication Error:", error));
     onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
-        loadUserData(user.uid);
+        loadUserData(user.uid).catch((error) => console.error("Load Error:", error));
       }
     });
 
-    // Save game data when user leaves or refreshes the page
-    window.addEventListener("beforeunload", () => {
-      saveGameData();
-    });
+    updateUI();
   </script>
 </body>
 </html>
