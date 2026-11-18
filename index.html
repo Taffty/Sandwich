@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffc928">
+  <title>Sandwich Clicker</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon" aria-hidden="true">🥪</div>
+        <div><span class="eyebrow">THE DELI</span><h1>Sandwich Clicker</h1></div>
+      </div>
+      <div class="top-actions">
+        <button class="icon-button" id="settingsButton" aria-label="Settings" title="Settings">⚙</button>
+        <button class="profile-button" id="profileButton"><span class="avatar">👤</span><span>Player</span></button>
+      </div>
+    </header>
+
+    <main class="dashboard">
+      <aside class="side-panel">
+        <div class="panel-heading"><span class="section-number">4</span><h2>Sandwiches</h2></div>
+        <p class="muted">Your deli menu</p>
+        <button class="menu-item active" type="button"><span>🥪</span><span><strong>Classic Sandwich</strong><small>Available now</small></span><span class="menu-check">✓</span></button>
+        <div class="menu-note"><span class="note-icon">✨</span><div><strong>More sandwiches soon</strong><p>New recipes will arrive in a future update.</p></div></div>
+        <div class="side-footer"><span class="status-dot"></span> Progress saves automatically</div>
+      </aside>
+
+      <section class="main-column">
+        <section class="panel sandwich-panel">
+          <div class="panel-heading"><span class="section-number">5</span><h2>Sandwich Interface</h2><span class="live-pill">● LIVE</span></div>
+          <div class="stats-row">
+            <div class="stat-card"><span class="stat-label">SANDWICHES MADE</span><strong id="sandwichCount">0</strong></div>
+            <div class="stat-card"><span class="stat-label">TOTAL REBIRTHS</span><strong id="rebirthCount">0</strong></div>
+          </div>
+          <button class="sandwich-button" id="sandwichButton" aria-label="Click the sandwich to make one">
+            <span class="sandwich-emoji" aria-hidden="true">🥪</span>
+            <span class="click-hint">CLICK TO MAKE A SANDWICH</span>
+          </button>
+          <div class="rebirth-area">
+            <div class="rebirth-copy"><div><span class="section-number small-number">3</span><strong>Rebirth</strong></div><span id="rebirthHint">Make 50 sandwiches to unlock rebirth.</span></div>
+            <button class="rebirth-button" id="rebirthButton" disabled>↻ &nbsp; REBIRTH</button>
+          </div>
+        </section>
+
+        <section class="panel upgrades-panel">
+          <div class="upgrade-grid">
+            <div class="upgrade-box">
+              <div class="panel-heading"><span class="section-number">6</span><h2>Personal Upgrades</h2></div>
+              <p class="muted">Spend sandwiches to improve your click power.</p>
+              <div class="upgrade-list">
+                <article class="upgrade-card">
+                  <div class="upgrade-icon">✖️</div><div class="upgrade-info"><strong>2x Sandwiches</strong><small id="doubleEffect">1x sandwiches per click</small><small>Level <b id="doubleLevel">0</b> · Cost: <b id="doubleCost">25</b></small></div>
+                  <button class="buy-button" id="doubleUpgradeButton">BUY</button>
+                </article>
+                <article class="upgrade-card">
+                  <div class="upgrade-icon">⏱️</div><div class="upgrade-info"><strong>Autoclicker</strong><small id="autoEffect">0 sandwiches per second</small><small>Level <b id="autoLevel">0</b> · Cost: <b id="autoCost">50</b></small></div>
+                  <button class="buy-button" id="autoUpgradeButton">BUY</button>
+                </article>
+                <article class="upgrade-card">
+                  <div class="upgrade-icon">🍀</div><div class="upgrade-info"><strong>Luck</strong><small id="luckEffect">0% critical chance</small><small>Level <b id="luckLevel">0</b> · Cost: <b id="luckCost">30</b></small></div>
+                  <button class="buy-button" id="luckUpgradeButton">BUY</button>
+                </article>
+              </div>
+            </div>
+            <div class="upgrade-box">
+              <div class="panel-heading"><span class="section-number">7</span><h2>Team Upgrades</h2></div>
+              <p class="muted">Work together to improve the deli.</p>
+              <div class="coming-soon"><span>🔒</span> Team upgrades coming soon</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel progress-panel">
+          <div class="progress-top"><div class="panel-heading"><span class="section-number">8</span><h2>Rebirth Progress</h2></div><strong id="progressText">0 / 50</strong></div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <p class="muted" id="progressCaption">50 sandwiches needed for your next rebirth.</p>
+        </section>
+      </section>
+
+      <aside class="leaderboards">
+        <section class="panel leaderboard-panel">
+          <div class="panel-heading"><span class="section-number">9</span><h2>Sandwich Leaderboard</h2></div>
+          <p class="muted">Most sandwiches made</p>
+          <div class="leader-row"><span class="rank">1</span><span class="leader-avatar">🥪</span><span class="leader-name">You <small>Local player</small></span><strong id="sandwichRank">0</strong></div>
+          <div class="leader-empty">Online rankings will be added later.</div>
+        </section>
+        <section class="panel leaderboard-panel">
+          <div class="panel-heading"><span class="section-number">10</span><h2>Rebirth Leaderboard</h2></div>
+          <p class="muted">Most rebirths</p>
+          <div class="leader-row"><span class="rank">1</span><span class="leader-avatar">🏆</span><span class="leader-name">You <small>Local player</small></span><strong id="rebirthRank">0</strong></div>
+          <div class="leader-empty">Online rankings will be added later.</div>
+        </section>
+      </aside>
+    </main>
+    <footer><span>🥪 Made fresh, one click at a time.</span><span>Sandwich Clicker <b>•</b> v0.1</span></footer>
+  </div>
+
+<dialog id="settingsDialog" class="modal">
+    <form method="dialog">
+        <button class="modal-close" aria-label="Close">×</button>
+
+        <span class="eyebrow">YOUR DELI</span>
+        <h2>Settings</h2>
+
+        <p>Customize your Sandwich Clicker experience!</p>
+
+        <div class="setting-option">
+            <div>
+                <strong>🌙 Dark Mode</strong>
+                <small>Switch between light and dark themes.</small>
+            </div>
+
+            <label class="switch">
+                <input type="checkbox" id="darkModeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <button class="secondary-button danger-button" id="resetAllButton" type="button">
+            Reset ALL progress (including rebirths)
+        </button>
+    </form>
+</dialog>
+<dialog id="profileDialog" class="modal">
+  <form method="dialog">
+    <button class="modal-close" aria-label="Close">×</button>
+    <span class="eyebrow">PLAYER PROFILE</span>
+    <h2>Welcome, Player!</h2>
+    <p>Your stats are saved in this browser.</p>
+    <div class="profile-stats">
+      <span>Sandwiches<strong id="profileSandwiches">0</strong></span>
+      <span>Rebirths<strong id="profileRebirths">0</strong></span>
+    </div>
+  </form>
+</dialog>
